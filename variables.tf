@@ -15,7 +15,6 @@ variable "kube_context" {
 variable "tenants" {
   type      = set(string)
   nullable  = false
-  sensitive = true
 }
 
 variable "cloudflare_api_token" {
