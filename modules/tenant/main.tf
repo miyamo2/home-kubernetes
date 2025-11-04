@@ -57,6 +57,7 @@ resource "local_file" "cert" {
 }
 
 resource "kubernetes_namespace" "this" {
+  count = var.skip_create_namespace ? 0 : 1
   metadata {
     annotations = {
       name = var.name
