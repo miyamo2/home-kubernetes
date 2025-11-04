@@ -32,7 +32,7 @@ provider "helm" {
 }
 
 module "common" {
-  source                 = "./modules/common"
+  source                 = "terraform/modules/common"
   cloudflare_account_id  = var.cloudflare_account_id
   cloudflare_api_token   = var.cloudflare_api_token
   cloudflare_tunnel_name = var.cloudflare_tunnel_name
@@ -40,7 +40,7 @@ module "common" {
 }
 
 module "tenant" {
-  source                = "./modules/tenant"
+  source                = "terraform/modules/tenant"
   for_each              = var.tenants
   name                  = each.key
   skip_create_namespace = each.value.skip_create_namespace
