@@ -9,10 +9,10 @@ resource "tls_private_key" "this" {
 }
 
 resource "local_file" "public_key" {
-  for_each = [
+  for_each = toset([
     "~/.ssh/${local.user_name}.pub",
     "${path.root}/credentials/${var.name}/${local.user_name}.key"
-  ]
+  ])
   content  = tls_private_key.this.public_key_pem
   filename = each.value
 }
