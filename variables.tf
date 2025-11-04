@@ -13,7 +13,9 @@ variable "kube_context" {
 }
 
 variable "tenants" {
-  type     = set(string)
+  type = map(object({
+    skip_create_namespace = optional(bool, false)
+  }))
   nullable = false
 }
 
