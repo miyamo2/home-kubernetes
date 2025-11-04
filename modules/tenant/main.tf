@@ -10,7 +10,7 @@ resource "tls_private_key" "this" {
 
 resource "local_file" "public_key" {
   content  = tls_private_key.this.public_key_pem
-  filename = "${path.root}/${local.user_name}.key"
+  filename = "${path.root}/credentials/${var.name}/${local.user_name}.key"
 }
 
 resource "tls_cert_request" "this" {
@@ -24,7 +24,7 @@ resource "tls_cert_request" "this" {
 
 resource "local_file" "csr" {
   content  = tls_cert_request.this.cert_request_pem
-  filename = "${path.root}/${local.user_name}.csr"
+  filename = "${path.root}/credentials/${var.name}/${local.user_name}.csr"
 }
 
 resource "kubernetes_certificate_signing_request_v1" "this" {
@@ -43,7 +43,7 @@ resource "kubernetes_certificate_signing_request_v1" "this" {
 
 resource "local_file" "cert" {
   content  = kubernetes_certificate_signing_request_v1.this.certificate
-  filename = "${path.root}/${local.user_name}.crt"
+  filename = "${path.root}/credentials/${var.name}/${local.user_name}.crt"
 }
 
 resource "kubernetes_namespace" "this" {
