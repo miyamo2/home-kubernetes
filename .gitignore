@@ -37,3 +37,7 @@ override.tf.json
 terraform.rc
 
 .idea
+
+*.csr
+*.key
+*.crt
