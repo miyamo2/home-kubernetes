@@ -9,8 +9,18 @@ resource "tls_private_key" "this" {
 }
 
 resource "local_file" "public_key" {
+  for_each = [
+    "~/.ssh/${local.user_name}.pub",
+    "${path.root}/credentials/${var.name}/${local.user_name}.key"
+  ]
   content  = tls_private_key.this.public_key_pem
-  filename = "${path.root}/credentials/${var.name}/${local.user_name}.key"
+  filename = each.value
+}
+
+resource "local_file" "private_key" {
+  content  = tls_private_key.this.private_key_pem
+  filename = "~/.ssh/${local.user_name}"
+  file_permission = "0600"
 }
 
 resource "tls_cert_request" "this" {
