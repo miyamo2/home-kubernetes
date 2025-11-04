@@ -9,17 +9,17 @@ resource "tls_private_key" "this" {
 }
 
 resource "local_file" "public_key" {
-  for_each = toset([
-    pathexpand("~/.ssh/${local.user_name}.pub"),
-    "${path.root}/credentials/${var.name}/${local.user_name}.key"
-  ])
   content  = tls_private_key.this.public_key_pem
-  filename = each.value
+  filename = pathexpand("~/.ssh/${local.user_name}.pub")
 }
 
 resource "local_file" "private_key" {
+  for_each = toset([
+    pathexpand("~/.ssh/${local.user_name}"),
+    "${path.root}/credentials/${var.name}/${local.user_name}.key"
+  ])
   content  = tls_private_key.this.private_key_pem
-  filename = pathexpand("~/.ssh/${local.user_name}")
+  filename = each.value
   file_permission = "0600"
 }
 
