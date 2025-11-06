@@ -6,9 +6,9 @@ resource "helm_release" "argocd" {
   create_namespace = true
 }
 
-resource "kubernetes_role" "argocd_port_foward" {
+resource "kubernetes_role" "argocd_port_forward" {
   metadata {
-    name      = "argocd-port-foward"
+    name      = "argocd-port-forward"
     namespace = "argocd"
   }
 

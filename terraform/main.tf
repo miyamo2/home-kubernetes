@@ -14,6 +14,10 @@ terraform {
       source  = "hashicorp/tls"
       version = "3.1.0"
     }
+    argocd = {
+      source  = "argoproj-labs/argocd"
+      version = "6.1.1"
+    }
   }
   backend "s3" {
     region = "ap-northeast-1"
@@ -45,3 +49,13 @@ module "tenant" {
   name     = each.value
 }
 
+module "argocd" {
+  source       = "./modules/argocd"
+  kube_config  = var.kube_config
+  kube_context = var.kube_context
+  tenants      = var.tenants
+  depends_on = [
+    "module.common",
+    "module.tenant"
+  ]
+}

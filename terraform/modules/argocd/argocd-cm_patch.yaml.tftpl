@@ -1,0 +1,4 @@
+data:
+%{ for v in tenants~}
+  accounts.${v}-owner: login,apikey
+%{ endfor ~}

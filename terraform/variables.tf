@@ -40,3 +40,4 @@ variable "new_relic_license_key" {
   nullable  = false
   sensitive = true
 }
+
