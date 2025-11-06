@@ -20,14 +20,18 @@ terraform {
   }
 }
 
+locals {
+  kube_config = pathexpand(var.kube_config)
+}
+
 provider "kubernetes" {
-  config_path    = pathexpand(var.kube_config)
+  config_path    = local.kube_config
   config_context = var.kube_context
 }
 
 provider "helm" {
   kubernetes {
-    config_path = pathexpand(var.kube_config)
+    config_path = local.kube_config
   }
 }
 
@@ -37,6 +41,8 @@ module "common" {
   cloudflare_api_token   = var.cloudflare_api_token
   cloudflare_tunnel_name = var.cloudflare_tunnel_name
   new_relic_license_key  = var.new_relic_license_key
+  kube_config            = local.kube_config
+  kube_context           = var.kube_context
 }
 
 module "tenant" {
@@ -47,7 +53,7 @@ module "tenant" {
 
 module "argocd" {
   source       = "./modules/argocd"
-  kube_config  = var.kube_config
+  kube_config  = local.kube_config
   kube_context = var.kube_context
   tenants      = var.tenants
   depends_on = [

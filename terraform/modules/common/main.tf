@@ -24,7 +24,7 @@ resource "terraform_data" "argocd_allow_app_in_any_namespace" {
   triggers_replace = helm_release.argocd.manifest
   provisioner "local-exec" {
     command = <<EOF
-    export KUBECONFIG=${pathexpand(var.kube_config)}
+    export KUBECONFIG=${var.kube_config}
     wget https://raw.githubusercontent.com/argoproj/argo-cd/refs/tags/v3.2.0/examples/k8s-rbac/argocd-server-applications/kustomization.yaml -P ${path.module}/argocd_allow_app_in_any_namespace/
     wget https://raw.githubusercontent.com/argoproj/argo-cd/refs/tags/v3.2.0/examples/k8s-rbac/argocd-server-applications/argocd-server-rbac-clusterrole.yaml -P ${path.module}/argocd_allow_app_in_any_namespace/
     wget https://raw.githubusercontent.com/argoproj/argo-cd/refs/tags/v3.2.0/examples/k8s-rbac/argocd-server-applications/argocd-server-rbac-clusterrolebinding.yaml -P ${path.module}/argocd_allow_app_in_any_namespace/
