@@ -41,3 +41,5 @@ terraform.rc
 *.csr
 *.key
 *.crt
+
+/terraform/modules/common/argocd_allow_app_in_any_namespace
