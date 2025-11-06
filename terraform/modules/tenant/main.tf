@@ -170,7 +170,7 @@ resource "kubernetes_role" "keda" {
   rule {
     api_groups     = ["*"]
     resources      = ["secrets"]
-    resource_names = ["${var.name}-keda-credentials"]
+    #resource_names = ["${var.name}-keda-credentials"]
     verbs          = ["*"]
   }
 }
