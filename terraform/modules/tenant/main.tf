@@ -132,9 +132,6 @@ resource "kubernetes_role_binding_v1" "argocd" {
     api_group = "rbac.authorization.k8s.io"
     kind      = "User"
     name      = local.user_name
-    namespace = var.name
+    namespace = "argocd"
   }
-  depends_on = [
-    kubernetes_role.this,
-  ]
 }
