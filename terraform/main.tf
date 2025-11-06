@@ -21,7 +21,7 @@ terraform {
 }
 
 provider "kubernetes" {
-  config_path    = var.kube_config
+  config_path    = pathexpand(var.kube_config)
   config_context = var.kube_context
 }
 
