@@ -51,7 +51,7 @@ module "argocd" {
   kube_context = var.kube_context
   tenants      = var.tenants
   depends_on = [
-    "module.common",
-    "module.tenant"
+    module.common,
+    module.tenant
   ]
 }
