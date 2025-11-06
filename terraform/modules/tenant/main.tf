@@ -80,6 +80,18 @@ resource "kubernetes_secret" "this" {
   ]
 }
 
+resource "kubernetes_secret" "argocd" {
+  metadata {
+    name      = "${local.user_name}-tls"
+    namespace = "argocd"
+  }
+  data = {
+    "tls.crt" = kubernetes_certificate_signing_request_v1.this.certificate
+    "tls.key" = tls_private_key.this.private_key_pem
+  }
+  type = "kubernetes.io/tls"
+}
+
 resource "kubernetes_role" "this" {
   metadata {
     name      = local.role_name
