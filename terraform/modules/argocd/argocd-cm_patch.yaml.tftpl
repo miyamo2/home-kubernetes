@@ -1,1 +1,1 @@
-{ "data": %{ for index, v in tenants~}%{ if index > 0 },%{ endif }"accounts.${v}-owner": "login,apikey"%{ endfor ~} }
+{ "data": %{ for i,v in tenants~}%{ if i > 0 },%{ endif }"accounts.${v}-owner": "login,apikey"%{ endfor ~} }
