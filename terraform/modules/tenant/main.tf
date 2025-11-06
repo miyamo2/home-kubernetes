@@ -65,7 +65,7 @@ resource "kubernetes_namespace" "this" {
   }
 }
 
-resource "kubernetes_secret" "this" {
+resource "kubernetes_secret" "tls" {
   metadata {
     name      = "${local.user_name}-tls"
     namespace = var.name
@@ -80,10 +80,22 @@ resource "kubernetes_secret" "this" {
   ]
 }
 
-resource "kubernetes_secret" "argocd" {
+resource "kubernetes_secret" "argocd_tls" {
   metadata {
     name      = "${local.user_name}-tls"
-    namespace = "argocd"
+    namespace = var.argocd_namespace
+  }
+  data = {
+    "tls.crt" = kubernetes_certificate_signing_request_v1.this.certificate
+    "tls.key" = tls_private_key.this.private_key_pem
+  }
+  type = "kubernetes.io/tls"
+}
+
+resource "kubernetes_secret" "keda_tls" {
+  metadata {
+    name      = "${local.user_name}-tls"
+    namespace = var.keda_namespace
   }
   data = {
     "tls.crt" = kubernetes_certificate_signing_request_v1.this.certificate
