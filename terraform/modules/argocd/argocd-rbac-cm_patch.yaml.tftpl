@@ -1,5 +1,1 @@
-data:
-  policy.csv: |
-%{ for v in tenants~}
-    g, ${v}-owner, proj:${v}:owner
-%{ endfor ~}
+{ "data": { "policy.csv" : "%{ for v in tenants~}g, ${v}-owner, proj:${v}:owner%{ endfor ~}"} } }

@@ -8,7 +8,7 @@ resource "terraform_data" "argocd_cm" {
   provisioner "local-exec" {
     command = <<EOF
     export KUBECONFIG=${pathexpand(var.kube_config)}
-    kubectl patch cm argocd-cm -p ${local.argocd_cm_patch_date} --context ${var.kube_context} -n argocd
+    kubectl patch cm argocd-cm --type merge -p '${local.argocd_cm_patch_date}' --context ${var.kube_context} -n argocd
     EOF
   }
 }
@@ -18,7 +18,7 @@ resource "terraform_data" "argocd_rbac_cm" {
   provisioner "local-exec" {
     command = <<EOF
     export KUBECONFIG=${pathexpand(var.kube_config)}
-    kubectl patch cm argocd-rbac-cm -p ${local.argocd_rbac_cm_patch_date} --context ${var.kube_context} -n argocd
+    kubectl patch cm argocd-rbac-cm --type merge -p '${local.argocd_rbac_cm_patch_date}' --context ${var.kube_context} -n argocd
     EOF
   }
 }
