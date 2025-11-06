@@ -40,9 +40,8 @@ module "common" {
 }
 
 module "tenant" {
-  source                = "./modules/tenant"
-  for_each              = var.tenants
-  name                  = each.key
-  skip_create_namespace = each.value.skip_create_namespace
+  source   = "./modules/tenant"
+  for_each = var.tenants
+  name     = each.value
 }
 

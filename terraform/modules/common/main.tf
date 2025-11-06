@@ -6,6 +6,20 @@ resource "helm_release" "argocd" {
   create_namespace = true
 }
 
+resource "kubernetes_role" "argocd_port_foward" {
+  metadata {
+    name      = "argocd-port-foward"
+    namespace = "argocd"
+  }
+
+  # See: https://managedkube.com/kubernetes/rbac/port/forward/2018/09/01/kubernetes-rbac-port-forward.html
+  rule {
+    api_groups = ["*"]
+    resources  = ["pods", "pods/portforward"]
+    verbs      = ["get", "list", "create"]
+  }
+}
+
 resource "helm_release" "cloudflare_tunnel_controller" {
   name             = "cloudflare-tunnel-ingress-controller"
   chart            = "cloudflare-tunnel-ingress-controller"

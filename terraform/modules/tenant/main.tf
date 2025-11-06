@@ -57,7 +57,6 @@ resource "local_file" "cert" {
 }
 
 resource "kubernetes_namespace" "this" {
-  count = var.skip_create_namespace ? 0 : 1
   metadata {
     annotations = {
       name = var.name
@@ -119,5 +118,23 @@ resource "kubernetes_role_binding_v1" "this" {
   ]
 }
 
-
-
+resource "kubernetes_role_binding_v1" "argocd" {
+  metadata {
+    name      = "${local.user_name}-argocd-argocd-port-foward"
+    namespace = "argocd"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = "argocd-port-foward"
+  }
+  subject {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "User"
+    name      = local.user_name
+    namespace = var.name
+  }
+  depends_on = [
+    kubernetes_role.this,
+  ]
+}
