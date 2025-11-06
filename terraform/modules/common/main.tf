@@ -15,7 +15,7 @@ resource "kubernetes_role" "argocd_port_foward" {
   # See: https://managedkube.com/kubernetes/rbac/port/forward/2018/09/01/kubernetes-rbac-port-forward.html
   rule {
     api_groups = ["*"]
-    resources  = ["services", "services/portforward", "pods"]
+    resources  = ["services", "services/portforward", "pods", "pods/portforward"]
     verbs      = ["get", "list", "create"]
   }
 }
