@@ -1,6 +1,6 @@
 locals {
-  argocd_cm_patch_date      = templatefile("${path.module}/argocd-cm_patch.yaml.tftpl", { tennants = var.tenants })
-  argocd_rbac_cm_patch_date = templatefile("${path.module}/argocd-rbac-cm_patch.yaml.tftpl", { tennants = var.tenants })
+  argocd_cm_patch_date      = templatefile("${path.module}/argocd-cm_patch.yaml.tftpl", { tenants = var.tenants })
+  argocd_rbac_cm_patch_date = templatefile("${path.module}/argocd-rbac-cm_patch.yaml.tftpl", { tenants = var.tenants })
 }
 
 resource "terraform_data" "argocd_cm" {
