@@ -137,3 +137,11 @@ resource "helm_release" "newrelic" {
     value = "false"
   }
 }
+
+resource "helm_release" "longhorn" {
+  name             = "longhorn"
+  chart            = "longhorn"
+  namespace        = "longhorn-system"
+  repository       = "https://charts.longhorn.io"
+  create_namespace = true
+}

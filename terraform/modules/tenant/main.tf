@@ -168,10 +168,10 @@ resource "kubernetes_role" "keda" {
 
   # TODO: Grant least privilege
   rule {
-    api_groups     = ["*"]
-    resources      = ["secrets"]
+    api_groups = ["*"]
+    resources  = ["secrets"]
     #resource_names = ["${var.name}-keda-credentials"]
-    verbs          = ["*"]
+    verbs = ["*"]
   }
 }
 
