@@ -159,7 +159,7 @@ resource "kubernetes_role" "keda" {
     api_groups     = ["*"]
     resources      = ["secrets"]
     resource_names = ["${var.name}-keda-credentials"]
-    verbs          = ["get", "list", "create", "update", "patch", "delete"]
+    verbs          = ["*"]
   }
 }
 
