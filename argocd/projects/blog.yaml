@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: blog
+  namespace: argocd
+spec:
+  description: blog project
+  sourceRepos:
+    - 'https://github.com/miyamo2/manifest.miyamo.today'
+  destinations:
+    - namespace: 'blog'
+      server: '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  roles:
+    - name: owner
+      description: owner role for blog project
+      policies:
+        - p, proj:blog:owner, applications, *, blog/*, allow
