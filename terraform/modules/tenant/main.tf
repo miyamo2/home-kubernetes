@@ -157,7 +157,7 @@ resource "kubernetes_role" "keda" {
   # TODO: Grant least privilege
   rule {
     api_groups     = ["*"]
-    resources      = ["secret"]
+    resources      = ["secrets"]
     resource_names = ["${var.name}-keda-credentials"]
     verbs          = ["get", "list", "create", "update", "patch", "delete"]
   }
