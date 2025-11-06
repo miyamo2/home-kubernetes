@@ -20,6 +20,19 @@ resource "kubernetes_role" "argocd_port_forward" {
   }
 }
 
+resource "terraform_data" "argocd_allow_app_in_any_namespace" {
+  triggers_replace = helm_release.argocd.manifest
+  provisioner "local-exec" {
+    command = <<EOF
+    export KUBECONFIG=${pathexpand(var.kube_config)}
+    kubectl apply -k ${path.module}/argocd_allow_app_in_any_namespace/
+    kubectl patch cm argocd-cmd-params-cm --type merge -p '{ "data": { "application.namespaces": "*" } }' --context ${var.kube_context} -n argocd
+    kubectl rollout restart deployment/argocd-server --context ${var.kube_context} -n argocd
+    kubectl rollout restart statefulset/argocd-application-controller --context ${var.kube_context} -n argocd
+    EOF
+  }
+}
+
 resource "helm_release" "cloudflare_tunnel_controller" {
   name             = "cloudflare-tunnel-ingress-controller"
   chart            = "cloudflare-tunnel-ingress-controller"

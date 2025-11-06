@@ -132,13 +132,13 @@ resource "kubernetes_role_binding_v1" "this" {
 
 resource "kubernetes_role_binding_v1" "argocd" {
   metadata {
-    name      = "${local.user_name}-argocd-argocd-port-foward"
+    name      = "${local.user_name}-argocd-argocd-port-forward"
     namespace = "argocd"
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Role"
-    name      = "argocd-port-foward"
+    name      = "argocd-port-forward"
   }
   subject {
     api_group = "rbac.authorization.k8s.io"
