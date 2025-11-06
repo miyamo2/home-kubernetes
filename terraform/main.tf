@@ -14,10 +14,6 @@ terraform {
       source  = "hashicorp/tls"
       version = "3.1.0"
     }
-    argocd = {
-      source  = "argoproj-labs/argocd"
-      version = "6.1.1"
-    }
   }
   backend "s3" {
     region = "ap-northeast-1"
