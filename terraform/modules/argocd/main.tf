@@ -1,5 +1,5 @@
 locals {
-  argocd_cm_patch_date      = jsonencode(templatefile("${path.module}/argocd-cm_patch.yaml.tftpl", { tenants = var.tenants }))
+  argocd_cm_patch_date      = jsonencode(jsondecode(templatefile("${path.module}/argocd-cm_patch.yaml.tftpl", { tenants = var.tenants })))
   argocd_rbac_cm_patch_date = templatefile("${path.module}/argocd-rbac-cm_patch.yaml.tftpl", { tenants = var.tenants })
 }
 
