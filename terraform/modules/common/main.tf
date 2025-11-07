@@ -1,14 +1,3 @@
-resource "kubernetes_cluster_role" "keda_clustertriggerauthentications_readonly" {
-  metadata {
-    name      = "keda-clustertriggerauthentications-readonly"
-  }
-  rule {
-    api_groups = ["*"]
-    resources  = ["secret"]
-    verbs = ["create", "update"]
-  }
-}
-
 resource "helm_release" "argocd" {
   name             = "argocd"
   chart            = "argo-cd"
