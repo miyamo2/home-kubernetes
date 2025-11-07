@@ -11,10 +11,12 @@ spec:
     - blog
   destinations:
     - namespace: 'blog'
-      server: '*'
+      server: 'https://kubernetes.default.svc'
   clusterResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: 'argoproj.io'
+      kind: 'Application'
+    - group: 'keda.sh'
+      kind: 'ClusterTriggerAuthentication'
   roles:
     - name: owner
       description: owner role for blog project

@@ -174,9 +174,9 @@ resource "kubernetes_role" "keda" {
     verbs = ["*"]
   }
   rule {
-    api_groups = ["keda.sh/v1alpha1"]
+    api_groups = ["keda.sh"]
     resources  = ["clustertriggerauthentications"]
-    verbs = ["*"]
+    verbs = ["get", "list"]
   }
 }
 
