@@ -12,6 +12,8 @@ spec:
   destinations:
     - namespace: 'blog'
       server: 'https://kubernetes.default.svc'
+    - namespace: ''
+      server: 'https://kubernetes.default.svc'
   clusterResourceWhitelist:
     - group: 'argoproj.io'
       kind: 'Application'
