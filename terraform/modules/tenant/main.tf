@@ -173,11 +173,6 @@ resource "kubernetes_role" "keda" {
     #resource_names = ["${var.name}-keda-credentials"]
     verbs = ["*"]
   }
-  rule {
-    api_groups = ["keda.sh"]
-    resources  = ["clustertriggerauthentications"]
-    verbs = ["get", "list"]
-  }
 }
 
 resource "kubernetes_role_binding_v1" "keda" {
@@ -195,5 +190,21 @@ resource "kubernetes_role_binding_v1" "keda" {
     kind      = "User"
     name      = local.user_name
     namespace = var.keda_namespace
+  }
+}
+
+resource "kubernetes_cluster_role_binding_v1" "keda" {
+  metadata {
+    name      = "${local.user_name}-keda-${var.name}-keda-clustertriggerauthentications-readonly"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = "keda-clustertriggerauthentications-readonly"
+  }
+  subject {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "User"
+    name      = local.user_name
   }
 }

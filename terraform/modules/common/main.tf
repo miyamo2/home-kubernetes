@@ -69,6 +69,17 @@ resource "helm_release" "keda" {
   create_namespace = true
 }
 
+resource "kubernetes_cluster_role" "keda_clustertriggerauthentications_readonly" {
+  metadata {
+    name      = "keda-clustertriggerauthentications-readonly"
+  }
+  rule {
+    api_groups = ["keda.sh"]
+    resources  = ["clustertriggerauthentications"]
+    verbs = ["get", "list"]
+  }
+}
+
 resource "helm_release" "newrelic" {
   name             = "newrelic-bundle"
   chart            = "nri-bundle"
