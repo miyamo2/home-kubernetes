@@ -101,7 +101,6 @@ resource "kubernetes_cluster_role_binding_v1" "keda" {
     name      = "get_secret"
   }
   subject {
-    api_group = "rbac.authorization.k8s.io"
     kind      = "ServiceAccount"
     name      = "keda-operator"
   }
