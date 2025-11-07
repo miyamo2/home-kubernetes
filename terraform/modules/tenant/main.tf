@@ -173,6 +173,11 @@ resource "kubernetes_role" "keda" {
     #resource_names = ["${var.name}-keda-credentials"]
     verbs = ["*"]
   }
+  rule {
+    api_groups = ["keda.sh/v1alpha1"]
+    resources  = ["clustertriggerauthentications"]
+    verbs = ["*"]
+  }
 }
 
 resource "kubernetes_role_binding_v1" "keda" {
