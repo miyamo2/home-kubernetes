@@ -49,6 +49,9 @@ module "tenant" {
   source   = "./modules/tenant"
   for_each = var.tenants
   name     = each.value
+  depends_on = [
+    module.common
+  ]
 }
 
 module "argocd" {

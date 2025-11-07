@@ -1,9 +1,65 @@
+resource "helm_release" "cilium" {
+  name             = "cilium"
+  chart            = "cilium"
+  namespace        = "kube-system"
+  repository       = "https://helm.cilium.io/"
+  create_namespace = true
+
+  set {
+    name  = "operator.replicas"
+    value = "1"
+  }
+}
+
+# See: https://docs.cilium.io/en/stable/installation/k8s-install-helm/#restart-unmanaged-pods
+resource "terraform_data" "restart_unmanaged_pod" {
+  triggers_replace = helm_release.cilium.manifest
+  depends_on = [
+    helm_release.cilium
+  ]
+  provisioner "local-exec" {
+    command = <<EOF
+    export KUBECONFIG=${var.kube_config}
+    kubectl get pods --all-namespaces -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,HOSTNETWORK:.spec.hostNetwork --no-headers=true | grep '<none>' | awk '{print "-n "$1" "$2}' | xargs -L 1 -r kubectl delete pod
+    EOF
+  }
+}
+
+resource "helm_release" "longhorn" {
+  name             = "longhorn"
+  chart            = "longhorn"
+  namespace        = "longhorn-system"
+  repository       = "https://charts.longhorn.io"
+  create_namespace = true
+  depends_on = [
+    terraform_data.restart_unmanaged_pod
+  ]
+}
+
+resource "terraform_data" "storageclass_patch" {
+  triggers_replace = helm_release.longhorn.manifest
+  depends_on = [
+    helm_release.longhorn
+  ]
+  provisioner "local-exec" {
+    command = <<EOF
+    export KUBECONFIG=${var.kube_config}
+    kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+    kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+    EOF
+  }
+}
+
 resource "helm_release" "argocd" {
   name             = "argocd"
   chart            = "argo-cd"
   namespace        = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
   create_namespace = true
+
+  depends_on = [
+    terraform_data.restart_unmanaged_pod
+  ]
 }
 
 resource "kubernetes_role" "argocd_port_forward" {
@@ -18,6 +74,10 @@ resource "kubernetes_role" "argocd_port_forward" {
     resources  = ["services", "services/portforward", "pods", "pods/portforward"]
     verbs      = ["get", "list", "create"]
   }
+
+  depends_on = [
+    helm_release.argocd
+  ]
 }
 
 resource "terraform_data" "argocd_allow_app_in_any_namespace" {
@@ -59,6 +119,10 @@ resource "helm_release" "cloudflare_tunnel_controller" {
     name  = "cloudflare.tunnelName"
     value = var.cloudflare_tunnel_name
   }
+
+  depends_on = [
+    terraform_data.restart_unmanaged_pod
+  ]
 }
 
 resource "helm_release" "keda" {
@@ -67,33 +131,37 @@ resource "helm_release" "keda" {
   namespace        = "keda"
   repository       = "https://kedacore.github.io/charts"
   create_namespace = true
+
+  depends_on = [
+    terraform_data.restart_unmanaged_pod
+  ]
 }
 
 resource "kubernetes_cluster_role" "keda_clustertriggerauthentications_readonly" {
   metadata {
-    name      = "keda-clustertriggerauthentications-readonly"
+    name = "keda-clustertriggerauthentications-readonly"
   }
   rule {
     api_groups = ["keda.sh"]
     resources  = ["clustertriggerauthentications"]
-    verbs = ["get", "list"]
+    verbs      = ["get", "list"]
   }
 }
 
 resource "kubernetes_cluster_role" "get_secret" {
   metadata {
-    name      = "get-secret"
+    name = "get-secret"
   }
   rule {
     api_groups = [""]
     resources  = ["secrets"]
-    verbs = ["get"]
+    verbs      = ["get"]
   }
 }
 
 resource "kubernetes_cluster_role_binding_v1" "keda" {
   metadata {
-    name      = "keda-operator-get-secret"
+    name = "keda-operator-get-secret"
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -101,8 +169,8 @@ resource "kubernetes_cluster_role_binding_v1" "keda" {
     name      = "get_secret"
   }
   subject {
-    kind      = "ServiceAccount"
-    name      = "keda-operator"
+    kind = "ServiceAccount"
+    name = "keda-operator"
   }
 }
 
@@ -173,26 +241,8 @@ resource "helm_release" "newrelic" {
     name  = "newrelic-logging.lowDataMode"
     value = "false"
   }
-}
 
-resource "helm_release" "longhorn" {
-  name             = "longhorn"
-  chart            = "longhorn"
-  namespace        = "longhorn-system"
-  repository       = "https://charts.longhorn.io"
-  create_namespace = true
-}
-
-resource "terraform_data" "storageclass_patch" {
-  triggers_replace = helm_release.longhorn.manifest
   depends_on = [
-    helm_release.longhorn
+    terraform_data.restart_unmanaged_pod
   ]
-  provisioner "local-exec" {
-    command = <<EOF
-    export KUBECONFIG=${var.kube_config}
-    kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
-    kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-    EOF
-  }
 }
