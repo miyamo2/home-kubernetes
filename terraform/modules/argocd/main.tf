@@ -1,8 +1,8 @@
 locals {
   argocd_cm_patch_data = toset([
-    for v in var.tenants : templatefile("${path.module}/argocd-cm_patch.yaml.tftpl", { tenant = v })
+    for v in var.tenants : templatefile("${path.module}/argocd-cm_patch.json.tftpl", { tenant = v })
   ])
-  argocd_rbac_cm_patch_data = templatefile("${path.module}/argocd-rbac-cm_patch.yaml.tftpl", {
+  argocd_rbac_cm_patch_data = templatefile("${path.module}/argocd-rbac-cm_patch.json.tftpl", {
     tenants = var.tenants
   })
 }

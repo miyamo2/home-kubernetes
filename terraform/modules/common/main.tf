@@ -1,13 +1,155 @@
+resource "helm_release" "kube_vip" {
+  name       = "kube-vip"
+  chart      = "kube-vip"
+  namespace  = "kube-system"
+  repository = "https://kube-vip.github.io/helm-charts"
+
+  set {
+    name  = "config.address"
+    value = "192.168.1.200"
+  }
+  set {
+    name  = "env.vip_interface"
+    value = "eth0"
+  }
+  set {
+    name  = "env.vip_cidr"
+    value = "24"
+  }
+  set {
+    name  = "env.dns_mode"
+    value = "first"
+  }
+  set {
+    name  = "env.cp_enable"
+    value = "true"
+  }
+  set {
+    name  = "env.cp_namespace"
+    value = "kube-system"
+  }
+  set {
+    name  = "env.svc_enable"
+    value = "true"
+  }
+  set {
+    name  = "env.svc_leasename"
+    value = "vip_leaderelection"
+  }
+  set {
+    name  = "env.vip_leaderelection"
+    value = "true"
+  }
+  set {
+    name  = "env.vip_leasename"
+    value = "plndr-cp-lock"
+  }
+  set {
+    name  = "env.vip_leaseduration"
+    value = "5"
+  }
+  set {
+    name  = "env.vip_renewdeadline"
+    value = "3"
+  }
+  set {
+    name  = "env.vip_retryperiod"
+    value = "1"
+  }
+  set {
+    name  = "serviceAccount.name"
+    value = "kube-vip"
+  }
+  set {
+    name  = "nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key"
+    value = "node-role.kubernetes.io/master"
+  }
+  set {
+    name  = "nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator"
+    value = "Exists"
+  }
+  set {
+    name  = "nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[1].matchExpressions[0].key"
+    value = "node-role.kubernetes.io/control-plane"
+  }
+  set {
+    name  = "nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[1].matchExpressions[0].operator"
+    value = "Exists"
+  }
+  set {
+    name  = "securityContext.capabilities.add[0]"
+    value = "NET_ADMIN"
+  }
+  set {
+    name  = "securityContext.capabilities.add[1]"
+    value = "NET_RAW"
+  }
+  set {
+    name  = "nodeSelector.node-role\\.kubernetes\\.io/control-plane"
+    value = "true"
+  }
+  set {
+    name  = "tolerations[0].effect"
+    value = "NoSchedule"
+  }
+  set {
+    name  = "tolerations[0].operator"
+    value = "Exists"
+  }
+  set {
+    name  = "tolerations[1].effect"
+    value = "NoSchedule"
+  }
+  set {
+    name  = "tolerations[1].operator"
+    value = "Exists"
+  }
+}
+
 resource "helm_release" "cilium" {
-  name             = "cilium"
-  chart            = "cilium"
-  namespace        = "kube-system"
-  repository       = "https://helm.cilium.io/"
-  create_namespace = true
+  name       = "cilium"
+  chart      = "cilium"
+  namespace  = "kube-system"
+  repository = "https://helm.cilium.io/"
+  depends_on = [
+    helm_release.kube_vip
+  ]
 
   set {
     name  = "operator.replicas"
     value = "1"
+  }
+  set {
+    name  = "kubeProxyReplacement"
+    value = "true"
+  }
+  set {
+    name  = "l2announcements.enabled"
+    value = "true"
+  }
+  set {
+    name  = "k8sClientRateLimit.qps"
+    value = "5" # services * (1 / leaseRenewDeadline); See: https://sreake.com/blog/learn-about-cilium-l2-announcement/
+  }
+  set {
+    name  = "k8sClientRateLimit.burst"
+    value = "10"
+  }
+  set {
+    name  = "kubeProxyReplacement"
+    value = "strict"
+  }
+  set {
+    name  = "k8sServiceHost"
+    value = "127.0.0.1" # See: https://speakerdeck.com/logica0419/kube-vip-cilium-k3s?slide=56
+  }
+  set {
+    name  = "k8sServicePort"
+    value = "6443"
+  }
+  set {
+    name  = "kubeConfigPath"
+    value = "/etc/rancher/k3s/k3s.yaml"
   }
 }
 
