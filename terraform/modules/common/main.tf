@@ -85,10 +85,6 @@ resource "helm_release" "kube_vip" {
     value = "NET_RAW"
   }
   set {
-    name  = "nodeSelector.node-role\\.kubernetes\\.io/control-plane"
-    value = "\"true\""
-  }
-  set {
     name  = "tolerations[0].effect"
     value = "NoSchedule"
   }
