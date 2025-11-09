@@ -132,10 +132,6 @@ resource "helm_release" "cilium" {
     value = "10"
   }
   set {
-    name  = "kubeProxyReplacement"
-    value = "strict"
-  }
-  set {
     name  = "k8sServiceHost"
     value = "127.0.0.1" # See: https://speakerdeck.com/logica0419/kube-vip-cilium-k3s?slide=56
   }
