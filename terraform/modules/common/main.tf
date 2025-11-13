@@ -17,12 +17,8 @@ resource "helm_release" "kube_vip" {
     value = "6443"
   }
   set {
-    name = "envValueFrom.vip_nodename"
-    value = yamlencode({
-      fieldRef = {
-        fieldPath = "spec.nodeName"
-      }
-    })
+    name  = "envValueFrom.vip_nodename.fieldRef.fieldPath"
+    value = "spec.nodeName"
   }
   set {
     name  = "env.vip_interface"
