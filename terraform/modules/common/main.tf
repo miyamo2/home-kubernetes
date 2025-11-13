@@ -101,6 +101,10 @@ resource "helm_release" "kube_vip" {
     value = "NET_RAW"
   }
   set {
+    name  = "securityContext.capabilities.drop[0]"
+    value = "ALL"
+  }
+  set {
     name  = "tolerations[0].effect"
     value = "NoSchedule"
   }
