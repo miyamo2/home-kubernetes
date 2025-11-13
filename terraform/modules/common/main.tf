@@ -175,6 +175,7 @@ resource "terraform_data" "restart_unmanaged_pod" {
     command = <<EOF
     export KUBECONFIG=${var.kube_config}
     kubectl get pods --all-namespaces -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,HOSTNETWORK:.spec.hostNetwork --no-headers=true | grep '<none>' | awk '{print "-n "$1" "$2}' | xargs -L 1 -r kubectl delete pod
+    kubectl wait --for=condition=ready --all pods --all-namespaces --timeout=300s
     EOF
   }
 }
