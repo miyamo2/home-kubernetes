@@ -25,14 +25,6 @@ resource "helm_release" "cilium" {
     value = "10"
   }
   set {
-    name  = "k8sServiceHost"
-    value = "127.0.0.1" # See: https://speakerdeck.com/logica0419/kube-vip-cilium-k3s?slide=56
-  }
-  set {
-    name  = "k8sServicePort"
-    value = "6443"
-  }
-  set {
     name  = "kubeConfigPath"
     value = "/etc/rancher/k3s/k3s.yaml"
   }
