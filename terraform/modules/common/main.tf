@@ -165,6 +165,7 @@ resource "helm_release" "longhorn" {
   namespace        = "longhorn-system"
   repository       = "https://charts.longhorn.io"
   create_namespace = true
+  timeout          = 500
   depends_on = [
     terraform_data.restart_unmanaged_pod
   ]
@@ -265,7 +266,7 @@ resource "helm_release" "keda" {
   namespace        = "keda"
   repository       = "https://kedacore.github.io/charts"
   create_namespace = true
-
+  timeout          = 500
   depends_on = [
     terraform_data.restart_unmanaged_pod
   ]
