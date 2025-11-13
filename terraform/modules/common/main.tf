@@ -9,6 +9,22 @@ resource "helm_release" "kube_vip" {
     value = "192.168.1.200"
   }
   set {
+    name  = "env.arp"
+    value = "true"
+  }
+  set {
+    name  = "env.port"
+    value = "6443"
+  }
+  set {
+    name = "envValueFrom.vip_nodename"
+    value = yamlencode({
+      fieldRef = {
+        fieldPath = "spec.nodeName"
+      }
+    })
+  }
+  set {
     name  = "env.vip_interface"
     value = "eth0"
   }
@@ -34,7 +50,7 @@ resource "helm_release" "kube_vip" {
   }
   set {
     name  = "env.svc_leasename"
-    value = "vip_leaderelection"
+    value = "plndr-svcs-lock"
   }
   set {
     name  = "env.vip_leaderelection"
@@ -55,6 +71,10 @@ resource "helm_release" "kube_vip" {
   set {
     name  = "env.vip_retryperiod"
     value = "1"
+  }
+  set {
+    name  = "env.prometheus_server"
+    value = ":2112"
   }
   set {
     name  = "serviceAccount.name"
