@@ -9,7 +9,7 @@ resource "helm_release" "kube_vip" {
     value = "192.168.1.200"
   }
   set {
-    name  = "env.arp"
+    name  = "env.vip_arp"
     value = "true"
   }
   set {
