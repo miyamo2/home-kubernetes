@@ -165,21 +165,6 @@ resource "helm_release" "cilium" {
   }
 }
 
-# See: https://docs.cilium.io/en/stable/installation/k8s-install-helm/#restart-unmanaged-pods
-resource "terraform_data" "restart_unmanaged_pod" {
-  triggers_replace = helm_release.cilium.manifest
-  depends_on = [
-    helm_release.cilium
-  ]
-  provisioner "local-exec" {
-    command = <<EOF
-    export KUBECONFIG=${var.kube_config}
-    kubectl get pods --all-namespaces -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,HOSTNETWORK:.spec.hostNetwork --no-headers=true | grep '<none>' | awk '{print "-n "$1" "$2}' | xargs -L 1 -r kubectl delete pod
-    kubectl wait --for=condition=ready --all pods --all-namespaces --timeout=300s
-    EOF
-  }
-}
-
 resource "helm_release" "longhorn" {
   name             = "longhorn"
   chart            = "longhorn"
@@ -187,9 +172,6 @@ resource "helm_release" "longhorn" {
   repository       = "https://charts.longhorn.io"
   create_namespace = true
   timeout          = 500
-  depends_on = [
-    terraform_data.restart_unmanaged_pod
-  ]
 }
 
 resource "terraform_data" "storageclass_patch" {
@@ -212,10 +194,6 @@ resource "helm_release" "argocd" {
   namespace        = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
   create_namespace = true
-
-  depends_on = [
-    terraform_data.restart_unmanaged_pod
-  ]
 }
 
 resource "kubernetes_role" "argocd_port_forward" {
@@ -275,10 +253,6 @@ resource "helm_release" "cloudflare_tunnel_controller" {
     name  = "cloudflare.tunnelName"
     value = var.cloudflare_tunnel_name
   }
-
-  depends_on = [
-    terraform_data.restart_unmanaged_pod
-  ]
 }
 
 resource "helm_release" "keda" {
@@ -288,9 +262,6 @@ resource "helm_release" "keda" {
   repository       = "https://kedacore.github.io/charts"
   create_namespace = true
   timeout          = 500
-  depends_on = [
-    terraform_data.restart_unmanaged_pod
-  ]
 }
 
 resource "kubernetes_cluster_role" "keda_clustertriggerauthentications_readonly" {
@@ -397,8 +368,4 @@ resource "helm_release" "newrelic" {
     name  = "newrelic-logging.lowDataMode"
     value = "false"
   }
-
-  depends_on = [
-    terraform_data.restart_unmanaged_pod
-  ]
 }
