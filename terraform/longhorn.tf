@@ -19,7 +19,7 @@ resource "terraform_data" "storageclass_patch" {
   ]
   provisioner "local-exec" {
     command = <<EOF
-    export KUBECONFIG=${var.kube_config}}
+    export KUBECONFIG=${var.kube_config}
     kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     EOF
   }
