@@ -172,6 +172,10 @@ resource "helm_release" "longhorn" {
   repository       = "https://charts.longhorn.io"
   create_namespace = true
   timeout          = 500
+
+  depends_on = [
+    helm_release.cilium
+  ]
 }
 
 resource "terraform_data" "storageclass_patch" {
@@ -194,6 +198,10 @@ resource "helm_release" "argocd" {
   namespace        = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
   create_namespace = true
+
+  depends_on = [
+    helm_release.cilium
+  ]
 }
 
 resource "kubernetes_role" "argocd_port_forward" {
@@ -239,6 +247,10 @@ resource "helm_release" "cloudflare_tunnel_controller" {
   repository       = "https://helm.strrl.dev"
   create_namespace = true
 
+  depends_on = [
+    helm_release.cilium
+  ]
+
   set {
     name  = "cloudflare.apiToken"
     value = var.cloudflare_api_token
@@ -262,6 +274,10 @@ resource "helm_release" "keda" {
   repository       = "https://kedacore.github.io/charts"
   create_namespace = true
   timeout          = 500
+
+  depends_on = [
+    helm_release.cilium
+  ]
 }
 
 resource "kubernetes_cluster_role" "keda_clustertriggerauthentications_readonly" {
@@ -308,6 +324,10 @@ resource "helm_release" "newrelic" {
   create_namespace = true
   repository       = "https://helm-charts.newrelic.com"
   timeout          = 500
+
+  depends_on = [
+    helm_release.cilium
+  ]
 
   set {
     name  = "global.licenseKey"
