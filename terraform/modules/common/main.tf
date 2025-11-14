@@ -165,21 +165,6 @@ resource "helm_release" "cilium" {
   }
 }
 
-resource "terraform_data" "edit_kubeconfig" {
-  triggers_replace = {
-    kube-vip = helm_release.kube_vip
-    cilium   = helm_release.cilium.manifest
-  }
-  depends_on = [
-    helm_release.cilium
-  ]
-  provisioner "local-exec" {
-    command = <<EOF
-    sudo sh -c "SERVER="https://192.168.1.200:6443" yq -i '.clusters[0].cluster.server = strenv(SERVER)' ${pathexpand(var.kube_config)}"
-    EOF
-  }
-}
-
 resource "helm_release" "longhorn" {
   name             = "longhorn"
   chart            = "longhorn"
@@ -189,7 +174,7 @@ resource "helm_release" "longhorn" {
   timeout          = 500
 
   depends_on = [
-    terraform_data.edit_kubeconfig
+    helm_release.cilium
   ]
 }
 
@@ -215,7 +200,7 @@ resource "helm_release" "argocd" {
   create_namespace = true
 
   depends_on = [
-    terraform_data.edit_kubeconfig
+    helm_release.cilium
   ]
 }
 
@@ -233,7 +218,7 @@ resource "kubernetes_role" "argocd_port_forward" {
   }
 
   depends_on = [
-    terraform_data.edit_kubeconfig
+    helm_release.argocd
   ]
 }
 
@@ -263,7 +248,7 @@ resource "helm_release" "cloudflare_tunnel_controller" {
   create_namespace = true
 
   depends_on = [
-    terraform_data.edit_kubeconfig
+    helm_release.cilium
   ]
 
   set {
@@ -291,7 +276,7 @@ resource "helm_release" "keda" {
   timeout          = 500
 
   depends_on = [
-    terraform_data.edit_kubeconfig
+    helm_release.cilium
   ]
 }
 
@@ -341,7 +326,7 @@ resource "helm_release" "newrelic" {
   timeout          = 500
 
   depends_on = [
-    terraform_data.edit_kubeconfig
+    helm_release.cilium
   ]
 
   set {
