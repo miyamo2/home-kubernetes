@@ -8,7 +8,7 @@ resource "helm_release" "newrelic" {
   wait             = false
 
   depends_on = [
-    terraform_data.wait_restart_unmanaged_pod
+    helm_release.cilium
   ]
 
   set {
