@@ -14,7 +14,7 @@ resource "helm_release" "argocd" {
   repository       = "https://argoproj.github.io/argo-helm"
   create_namespace = true
   wait             = false
-
+  timeout          = 500
   depends_on = [
     helm_release.cilium
   ]
