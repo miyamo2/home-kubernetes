@@ -6,7 +6,7 @@ resource "helm_release" "cloudflare_tunnel_controller" {
   create_namespace = true
 
   depends_on = [
-    helm_release.cilium
+    terraform_data.wait_restart_unmanaged_pod
   ]
 
   set {

@@ -8,7 +8,7 @@ resource "helm_release" "longhorn" {
   wait             = false
 
   depends_on = [
-    helm_release.cilium
+    terraform_data.wait_restart_unmanaged_pod
   ]
 }
 

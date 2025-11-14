@@ -16,7 +16,7 @@ resource "helm_release" "argocd" {
   wait             = false
   timeout          = 500
   depends_on = [
-    helm_release.cilium
+    terraform_data.wait_restart_unmanaged_pod
   ]
 }
 
