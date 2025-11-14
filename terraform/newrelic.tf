@@ -5,6 +5,7 @@ resource "helm_release" "newrelic" {
   create_namespace = true
   repository       = "https://helm-charts.newrelic.com"
   timeout          = 500
+  wait             = false
 
   depends_on = [
     terraform_data.wait_restart_unmanaged_pod

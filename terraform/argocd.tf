@@ -13,6 +13,7 @@ resource "helm_release" "argocd" {
   namespace        = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
   create_namespace = true
+  wait             = false
 
   depends_on = [
     terraform_data.wait_restart_unmanaged_pod
