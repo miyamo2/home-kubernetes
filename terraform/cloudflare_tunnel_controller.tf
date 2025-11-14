@@ -5,6 +5,10 @@ resource "helm_release" "cloudflare_tunnel_controller" {
   repository       = "https://helm.strrl.dev"
   create_namespace = true
 
+  depends_on = [
+    terraform_data.wait_restart_unmanaged_pod
+  ]
+
   set {
     name  = "cloudflare.apiToken"
     value = var.cloudflare_api_token

@@ -6,6 +6,10 @@ resource "helm_release" "newrelic" {
   repository       = "https://helm-charts.newrelic.com"
   timeout          = 500
 
+  depends_on = [
+    terraform_data.wait_restart_unmanaged_pod
+  ]
+
   set {
     name  = "global.licenseKey"
     value = var.new_relic_license_key

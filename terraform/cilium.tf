@@ -4,6 +4,10 @@ resource "helm_release" "cilium" {
   namespace  = "kube-system"
   repository = "https://helm.cilium.io/"
 
+  depends_on = [
+    helm_release.kube_vip
+  ]
+
   set {
     name  = "operator.replicas"
     value = "1"

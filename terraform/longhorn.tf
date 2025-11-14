@@ -5,6 +5,10 @@ resource "helm_release" "longhorn" {
   repository       = "https://charts.longhorn.io"
   create_namespace = true
   timeout          = 500
+
+  depends_on = [
+    terraform_data.wait_restart_unmanaged_pod
+  ]
 }
 
 resource "terraform_data" "storageclass_patch" {

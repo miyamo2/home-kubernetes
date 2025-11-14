@@ -13,6 +13,10 @@ resource "helm_release" "argocd" {
   namespace        = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
   create_namespace = true
+
+  depends_on = [
+    terraform_data.wait_restart_unmanaged_pod
+  ]
 }
 
 resource "kubernetes_role" "argocd_port_forward" {
@@ -54,6 +58,11 @@ resource "terraform_data" "argocd_allow_app_in_any_namespace" {
 resource "terraform_data" "argocd_cm" {
   for_each         = local.argocd_cm_patch_data
   triggers_replace = local.argocd_cm_patch_data
+
+  depends_on = [
+    helm_release.argocd
+  ]
+
   provisioner "local-exec" {
     command = <<EOF
     export KUBECONFIG=${var.kube_config}
@@ -64,6 +73,11 @@ resource "terraform_data" "argocd_cm" {
 
 resource "terraform_data" "argocd_rbac_cm" {
   triggers_replace = local.argocd_rbac_cm_patch_data
+
+  depends_on = [
+    helm_release.argocd
+  ]
+
   provisioner "local-exec" {
     command = <<EOF
     export KUBECONFIG=${var.kube_config}

@@ -5,6 +5,10 @@ resource "helm_release" "keda" {
   repository       = "https://kedacore.github.io/charts"
   create_namespace = true
   timeout          = 500
+
+  depends_on = [
+    terraform_data.wait_restart_unmanaged_pod
+  ]
 }
 
 resource "kubernetes_cluster_role" "keda_clustertriggerauthentications_readonly" {
