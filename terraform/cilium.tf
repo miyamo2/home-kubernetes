@@ -42,7 +42,7 @@ resource "helm_release" "cilium" {
   }
 }
 
-resource "terraform_data" "wait_restart_unmanaged_pod" {
+resource "terraform_data" "wait_cilium_ready" {
   triggers_replace = helm_release.cilium.manifest
   provisioner "local-exec" {
     command = <<EOF

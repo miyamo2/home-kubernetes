@@ -7,7 +7,7 @@ resource "helm_release" "longhorn" {
   timeout          = 500
 
   depends_on = [
-    terraform_data.wait_restart_unmanaged_pod
+    terraform_data.wait_cilium_ready
   ]
 }
 
