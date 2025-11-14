@@ -114,7 +114,7 @@ resource "helm_release" "kube_vip" {
   }
   set {
     name  = "tolerations[1].effect"
-    value = "NoSchedule"
+    value = "NoExecute"
   }
   set {
     name  = "tolerations[1].operator"
