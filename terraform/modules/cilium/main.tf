@@ -56,7 +56,7 @@ resource "terraform_data" "restart_unmanaged_pod" {
 resource "terraform_data" "wait_restart_unmanaged_pod" {
   triggers_replace = helm_release.cilium.manifest
   depends_on = [
-    helm_release.cilium
+    terraform_data.restart_unmanaged_pod
   ]
   provisioner "local-exec" {
     command = <<EOF
