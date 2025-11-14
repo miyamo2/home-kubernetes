@@ -35,14 +35,59 @@ provider "helm" {
   }
 }
 
-module "common" {
-  source                 = "./modules/common"
+module "kube_vip" {
+  source = "./modules/kube_vip"
+}
+
+module "cilium" {
+  source       = "./modules/cilium"
+  kube_config  = local.kube_config
+  kube_context = var.kube_context
+  depends_on = [
+    module.kube_vip
+  ]
+}
+
+module "longhorn" {
+  source      = "./modules/longhorn"
+  kube_config = local.kube_config
+  depends_on = [
+    module.cilium
+  ]
+}
+
+module "argocd" {
+  source      = "./modules/argocd"
+  kube_config = local.kube_config
+  tenants     = var.tenants
+  depends_on = [
+    module.cilium
+  ]
+}
+
+module "cloudflare_tunnel_controller" {
+  source                 = "./modules/cloudflare_tunnel_controller"
   cloudflare_account_id  = var.cloudflare_account_id
   cloudflare_api_token   = var.cloudflare_api_token
   cloudflare_tunnel_name = var.cloudflare_tunnel_name
-  new_relic_license_key  = var.new_relic_license_key
-  kube_config            = local.kube_config
-  kube_context           = var.kube_context
+  depends_on = [
+    module.cilium
+  ]
+}
+
+module "keda" {
+  source = "./modules/keda"
+  depends_on = [
+    module.cilium
+  ]
+}
+
+module "newrelic" {
+  source                = "./modules/newrelic"
+  new_relic_license_key = var.new_relic_license_key
+  depends_on = [
+    module.cilium
+  ]
 }
 
 module "tenant" {
@@ -50,17 +95,7 @@ module "tenant" {
   for_each = var.tenants
   name     = each.value
   depends_on = [
-    module.common
-  ]
-}
-
-module "argocd" {
-  source       = "./modules/argocd"
-  kube_config  = local.kube_config
-  kube_context = var.kube_context
-  tenants      = var.tenants
-  depends_on = [
-    module.common,
-    module.tenant
+    module.keda,
+    module.argocd
   ]
 }
