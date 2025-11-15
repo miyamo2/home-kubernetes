@@ -6,7 +6,7 @@ resource "helm_release" "cilium" {
 
   set {
     name  = "operator.replicas"
-    value = "1"
+    value = "3"
   }
   set {
     name  = "kubeProxyReplacement"
