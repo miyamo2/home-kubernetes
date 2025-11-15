@@ -26,7 +26,7 @@ resource "helm_release" "kube_vip" {
   }
   set {
     name  = "env.vip_cidr"
-    value = "24"
+    value = "32"
   }
   set {
     name  = "env.dns_mode"
