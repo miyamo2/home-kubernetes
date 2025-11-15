@@ -4,10 +4,6 @@ resource "helm_release" "cilium" {
   namespace  = "kube-system"
   repository = "https://helm.cilium.io/"
 
-  depends_on = [
-    helm_release.kube_vip
-  ]
-
   set {
     name  = "operator.replicas"
     value = "1"
@@ -30,7 +26,7 @@ resource "helm_release" "cilium" {
   }
   set {
     name  = "k8sServiceHost"
-    value = "127.0.0.1" # See: https://speakerdeck.com/logica0419/kube-vip-cilium-k3s?slide=56
+    value = "192.168.1.200"
   }
   set {
     name  = "k8sServicePort"
