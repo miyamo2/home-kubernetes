@@ -145,13 +145,6 @@ resource "kubernetes_role_binding_v1" "this" {
 resource "kubernetes_role" "default_namespace" {
   metadata {
     name      = "${local.user_name}-default-namespace"
-    namespace = "default"
-  }
-
-  rule {
-    api_groups = ["*"]
-    resources  = ["secrets"]
-    verbs      = ["create"]
   }
 
   rule {
