@@ -164,6 +164,12 @@ resource "kubernetes_role" "default_namespace" {
   rule {
     api_groups     = [""]
     resources      = ["secrets"]
+    verbs          = ["create"]
+  }
+
+  rule {
+    api_groups     = [""]
+    resources      = ["secrets"]
     resource_names = ["secret-${var.name}-trigger-auth"]
     verbs          = ["*"]
   }
