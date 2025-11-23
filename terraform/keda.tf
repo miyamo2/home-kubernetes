@@ -3,12 +3,18 @@ resource "helm_release" "keda" {
   chart            = "keda"
   namespace        = "keda"
   repository       = "https://kedacore.github.io/charts"
+  version          = "2.18.0"
   create_namespace = true
   timeout          = 500
 
   depends_on = [
     terraform_data.wait_cilium_ready
   ]
+
+  set {
+    name  = "image.keda.tag"
+    value = "v2.18.0"
+  }
 }
 
 resource "kubernetes_cluster_role" "keda_clustertriggerauthentications_readonly" {
