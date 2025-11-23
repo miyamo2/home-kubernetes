@@ -144,11 +144,17 @@ resource "kubernetes_role_binding_v1" "this" {
 
 resource "kubernetes_role" "default_namespace" {
   metadata {
-    name      = "${local.user_name}-default-namespace"
+    name = "${local.user_name}-default-namespace"
   }
 
   rule {
-    api_groups     = ["*"]
+    api_groups = [""]
+    resources  = ["secrets"]
+    verbs      = ["create"]
+  }
+
+  rule {
+    api_groups     = [""]
     resources      = ["secrets"]
     resource_names = ["secret-${var.name}-trigger-auth"]
     verbs          = ["*"]
@@ -202,7 +208,7 @@ resource "kubernetes_role" "keda" {
 
   # TODO: Grant least privilege
   rule {
-    api_groups     = ["*"]
+    api_groups     = [""]
     resources      = ["secrets"]
     resource_names = ["${var.name}-keda-credentials"]
     verbs          = ["*"]
