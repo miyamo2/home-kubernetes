@@ -80,6 +80,20 @@ resource "kubernetes_secret" "tls" {
   ]
 }
 
+resource "kubernetes_secret" "defailt_tls" {
+  metadata {
+    name      = "${local.user_name}-tls"
+  }
+  data = {
+    "tls.crt" = kubernetes_certificate_signing_request_v1.this.certificate
+    "tls.key" = tls_private_key.this.private_key_pem
+  }
+  type = "kubernetes.io/tls"
+  depends_on = [
+    kubernetes_namespace.this
+  ]
+}
+
 resource "kubernetes_secret" "argocd_tls" {
   metadata {
     name      = "${local.user_name}-tls"
