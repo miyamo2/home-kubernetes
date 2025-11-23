@@ -148,12 +148,6 @@ resource "kubernetes_role" "default_namespace" {
   }
 
   rule {
-    api_groups = [""]
-    resources  = ["secrets"]
-    verbs      = ["create"]
-  }
-
-  rule {
     api_groups     = [""]
     resources      = ["secrets"]
     resource_names = ["secret-${var.name}-trigger-auth"]
@@ -164,7 +158,6 @@ resource "kubernetes_role" "default_namespace" {
 resource "kubernetes_role_binding_v1" "default_namespace" {
   metadata {
     name      = "${local.user_name}-default-${local.user_name}-default-namespace"
-    namespace = var.name
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
