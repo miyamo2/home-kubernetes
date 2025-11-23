@@ -144,7 +144,7 @@ resource "kubernetes_role_binding_v1" "this" {
 
 resource "kubernetes_role" "default_namespace" {
   metadata {
-    name = "${local.user_name}-default-namespace"
+    name = "${var.name}-default-namespace"
   }
 
   rule {
