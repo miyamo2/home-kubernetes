@@ -142,6 +142,41 @@ resource "kubernetes_role_binding_v1" "this" {
   ]
 }
 
+resource "kubernetes_role" "default_namespace" {
+  metadata {
+    name      = "${local.user_name}-default-namespace"
+    namespace = "default"
+  }
+
+  rule {
+    api_groups     = ["*"]
+    resources      = ["secrets"]
+    resource_names = ["secret-read-model-updater-trigger-auth"]
+    verbs          = ["*"]
+  }
+}
+
+resource "kubernetes_role_binding_v1" "default_namespace" {
+  metadata {
+    name      = "${local.user_name}-default-${local.user_name}-default-namespace"
+    namespace = var.name
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = "${var.name}-default-namespace"
+  }
+  subject {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "User"
+    name      = local.user_name
+    namespace = var.name
+  }
+  depends_on = [
+    kubernetes_role.this,
+  ]
+}
+
 resource "kubernetes_role_binding_v1" "argocd" {
   metadata {
     name      = "${local.user_name}-argocd-argocd-port-forward"
@@ -168,10 +203,10 @@ resource "kubernetes_role" "keda" {
 
   # TODO: Grant least privilege
   rule {
-    api_groups = ["*"]
-    resources  = ["secrets"]
-    #resource_names = ["${var.name}-keda-credentials"]
-    verbs = ["*"]
+    api_groups     = ["*"]
+    resources      = ["secrets"]
+    resource_names = ["${var.name}-keda-credentials"]
+    verbs          = ["*"]
   }
 }
 
