@@ -106,6 +106,18 @@ resource "kubernetes_secret" "argocd_tls" {
   type = "kubernetes.io/tls"
 }
 
+resource "kubernetes_secret" "keda_tls" {
+  metadata {
+    name      = "${local.user_name}-tls"
+    namespace = var.keda_namespace
+  }
+  data = {
+    "tls.crt" = kubernetes_certificate_signing_request_v1.this.certificate
+    "tls.key" = tls_private_key.this.private_key_pem
+  }
+  type = "kubernetes.io/tls"
+}
+
 resource "kubernetes_role" "this" {
   metadata {
     name      = local.role_name
@@ -144,6 +156,45 @@ resource "kubernetes_role_binding_v1" "this" {
   ]
 }
 
+resource "kubernetes_role" "default_namespace" {
+  metadata {
+    name = "${var.name}-default-namespace"
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["secrets"]
+    verbs      = ["create"]
+  }
+
+  rule {
+    api_groups     = [""]
+    resources      = ["secrets"]
+    resource_names = ["secret-${var.name}-trigger-auth"]
+    verbs          = ["*"]
+  }
+}
+
+resource "kubernetes_role_binding_v1" "default_namespace" {
+  metadata {
+    name = "${local.user_name}-default-${local.user_name}-default-namespace"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = "${var.name}-default-namespace"
+  }
+  subject {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "User"
+    name      = local.user_name
+    namespace = var.name
+  }
+  depends_on = [
+    kubernetes_role.this,
+  ]
+}
+
 resource "kubernetes_role_binding_v1" "argocd" {
   metadata {
     name      = "${local.user_name}-argocd-argocd-port-forward"
@@ -159,5 +210,54 @@ resource "kubernetes_role_binding_v1" "argocd" {
     kind      = "User"
     name      = local.user_name
     namespace = var.argocd_namespace
+  }
+}
+
+resource "kubernetes_role" "keda" {
+  metadata {
+    name      = "${var.name}-keda-credential"
+    namespace = var.keda_namespace
+  }
+
+  # TODO: Grant least privilege
+  rule {
+    api_groups     = [""]
+    resources      = ["secrets"]
+    resource_names = ["${var.name}-keda-credentials"]
+    verbs          = ["*"]
+  }
+}
+
+resource "kubernetes_role_binding_v1" "keda" {
+  metadata {
+    name      = "${local.user_name}-keda-${var.name}-keda-credential"
+    namespace = var.keda_namespace
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = "${var.name}-keda-credential"
+  }
+  subject {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "User"
+    name      = local.user_name
+    namespace = var.keda_namespace
+  }
+}
+
+resource "kubernetes_cluster_role_binding_v1" "keda" {
+  metadata {
+    name = "${local.user_name}-keda-${var.name}-keda-clustertriggerauthentications-readonly"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "keda-clustertriggerauthentications-readonly"
+  }
+  subject {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "User"
+    name      = local.user_name
   }
 }
