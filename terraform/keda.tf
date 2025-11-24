@@ -15,6 +15,11 @@ resource "helm_release" "keda" {
     name  = "image.keda.tag"
     value = "2.18.0"
   }
+
+  set {
+    name  = "logging.operator.level"
+    value = "debug"
+  }
 }
 
 resource "kubernetes_cluster_role" "keda_clustertriggerauthentications_readonly" {

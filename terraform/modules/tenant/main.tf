@@ -82,7 +82,7 @@ resource "kubernetes_secret" "tls" {
 
 resource "kubernetes_secret" "defailt_tls" {
   metadata {
-    name      = "${local.user_name}-tls"
+    name = "${local.user_name}-tls"
   }
   data = {
     "tls.crt" = kubernetes_certificate_signing_request_v1.this.certificate
@@ -162,9 +162,9 @@ resource "kubernetes_role" "default_namespace" {
   }
 
   rule {
-    api_groups     = [""]
-    resources      = ["secrets"]
-    verbs          = ["create"]
+    api_groups = [""]
+    resources  = ["secrets"]
+    verbs      = ["create"]
   }
 
   rule {
@@ -177,7 +177,7 @@ resource "kubernetes_role" "default_namespace" {
 
 resource "kubernetes_role_binding_v1" "default_namespace" {
   metadata {
-    name      = "${local.user_name}-default-${local.user_name}-default-namespace"
+    name = "${local.user_name}-default-${local.user_name}-default-namespace"
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
