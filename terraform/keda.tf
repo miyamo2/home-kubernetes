@@ -13,7 +13,7 @@ resource "helm_release" "keda" {
 
   set {
     name  = "image.keda.tag"
-    value = "2.18.0"
+    value = "2.18.0@sha256:ab9f9ccbf8e6736e19255d8344c8ad57a59d469877c64d157dfb089cbfc2ddef"
   }
 
   set {
