@@ -40,7 +40,6 @@ module "tenant" {
   for_each = var.tenants
   name     = each.value
   depends_on = [
-    helm_release.argocd,
-    helm_release.keda
+    helm_release.argocd
   ]
 }
